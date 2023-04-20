@@ -13,14 +13,14 @@ if __name__ == '__main__':
             noTerminal = input("no-terminal "+str(i+1)+": ")
             gramatica[noTerminal] = []
             print(
-                "Ingresa las derivaciones , cuando termine con cada una digite '$' para seguir con la siguiente")
+                "Ingresa las derivaciones empezando con el noTerminal inicial , cuando termine con cada una digite '$' para seguir con la siguiente")
             derivacion = input("")
             while(derivacion != "$"):
                 gramatica[noTerminal].append(derivacion)
                 derivacion = input("")
         L = TopDownParsing(gramatica)
         print("First: ")
-        L.NT()
+        L.nt()
         L.calculateFirst()
         for clave, valores in L.first.items():
             print(f"{clave} : {valores}")
