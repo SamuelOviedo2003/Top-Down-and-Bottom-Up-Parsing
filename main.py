@@ -20,7 +20,7 @@ if __name__ == '__main__':
                 derivacion = input("")
         L = TopDownParsing(gramatica)
         print("First: ")
-        L.nt()
+        L.nT()
         L.calculateFirst()
         for clave, valores in L.first.items():
             print(f"{clave} : {valores}")
