@@ -11,6 +11,7 @@ class TopDownParsing:
         self.first = {}
         self.follow = {}
         self.tabla = pd.DataFrame()
+        self.LL1 = True
 
     def nT(self):
         pila = list(self.gramatica.keys())
@@ -149,38 +150,62 @@ class TopDownParsing:
                         pass
         # return indice
 
-    def indicesTabla(self):
-        self.tabla = pd.DataFrame(index=list(
-            self.gramatica.keys()), columns=list(self.terminales.keys()))
-
-    def recursionTabla(self, llave, buscado, produccion: List[str]):
+    def recursionTabla(self, llave, buscado, produccion: List[str], diccionario):
         producciones = produccion
-        for valor in self.gramatica.get(llave):
+        for valor in diccionario.get(llave):
             producciones.append(valor)
             if(valor[0] != buscado):
                 if valor[0].isupper():
-                    return self.recursionTabla(valor[0], buscado, producciones)
+                    return self.recursionTabla(valor[0], buscado, producciones, diccionario)
                 else:
                     producciones.pop()
             if(valor[0] == buscado):
                 return producciones[0]
 
     def calculateTabla(self):
-        # print(len(self.tabla.index))
-        for noTerminal in self.tabla.index:
-            for terminal in self.tabla.columns:
-                if(terminal in self.first[noTerminal]):
-                    self.tabla.at[noTerminal, terminal] = self.recursionTabla(
-                        noTerminal, terminal, [])
-                if('ε' in self.first[noTerminal]):
-                    for valor in self.follow[noTerminal]:
-                        self.tabla.at[noTerminal, valor] = 'ε'
+        if self.LL1:
+            self.tabla = pd.DataFrame(index=list(
+            self.gramatica.keys()), columns=list(self.terminales.keys()))
+            for noTerminal in self.tabla.index:
+                for terminal in self.tabla.columns:
+                    auxDict = self.gramatica.copy()
+                    if(terminal in self.first[noTerminal]):
+                        agregado = self.recursionTabla(
+                            noTerminal, terminal, [], auxDict)
+                        if agregado == None:
+                            auxDict[noTerminal]
+                            agregado = self.recursionTabla(
+                                noTerminal, terminal, [], auxDict)
+                        self.tabla.at[noTerminal, terminal] = agregado
+                    if('ε' in self.first[noTerminal]):
+                        for valor in self.follow[noTerminal]:
+                            self.tabla.at[noTerminal, valor] = 'ε'
+        else:
+            print("No calculo de tabla ,debido a que no es LL1")
+
+    def firstCadena(self, cadena):
+        firstC = set()
+        for i in cadena:
+            try:
+                if i == 'ε':
+                    continue
+                if 'ε' not in self.first[i]:
+                    firstC.update(self.first[i])
+                    break
+                if 'ε' in self.first[i]:
+                    firstC.update(self.first[i])
+            except KeyError as e:
+                print(
+                    "El siguiente valor puede causar errores en la ejecucion debido a que no esta definido en la gramtica: ", end="")
+                print(e)
+        return firstC
 
     def calculateCondiciones(self):
+        dictAux = {k: v[:] for k, v in self.gramatica.items()}
         pass
 
 
-#a = TopDownParsing({"E": ["TA"], "A": ["+TA", "ε"], "T": ["FB"], "B": ["*FB", "ε"], "F": ["(E)", "i"]})
+a = TopDownParsing({"E": ["TA"], "A": ["+TA", "ε"],"T": ["FB"], "B": ["*FB", "ε"], "F": ["(E)", "i"]})
 #a= TopDownParsing({"S":["L=R","R"],"R":["L"],"L":["*R","i"]})
 #a= TopDownParsing({"S":["aaSb","cSb","b"]})
 #a= TopDownParsing({"S":["aSc","B","ε"],"B":["bBc","ε"]})
@@ -190,25 +215,27 @@ class TopDownParsing:
 #a = TopDownParsing({"R": ["EA"], "A": ["EA", "ε"],"E": ["CB"], "B": ["CB", "ε"],"C":["L","(R)"],"L":["a","b","c"]})
 # a = TopDownParsing({"E": ["E+T","E-T","T"], "T": ["T*F", "T/F","F"],"F": ["(E)","n"]})# problema tabla
 
-'''
+
 a.nT()
 a.calculateFirst()
 
 print("First:")
 for clave, valores in a.first.items():
-        print(f"{clave} : {valores}")
-        print("")
+    print(f"{clave} : {valores}")
+    print("")
 a.calculateFollow()
 
 print("Follow:")
 for clave, valores in a.follow.items():
-        print(f"{clave} : {valores}")
-        print("")
+    print(f"{clave} : {valores}")
+    print("")
 
-a.indicesTabla()
 a.calculateTabla()
-#print(a.first)
+# print(a.first)
 # print(a.terminales)
 print(a.tabla)
-# print(a.gramatica)'''
+print(a.firstCadena("BPε"))
+print(a.calculateCondiciones)
+# print(a.gramatica)
+
 
