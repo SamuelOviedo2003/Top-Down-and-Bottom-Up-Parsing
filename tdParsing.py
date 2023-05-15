@@ -155,7 +155,9 @@ class TopDownParsing:
         for valor in diccionario.get(llave):
             producciones.append(valor)
             if(valor[0] != buscado):
-                if valor[0].isupper():
+                if valor[0].isupper() and 'ε' in self.first[valor[0]] :
+                    return "1"
+                if valor[0].isupper() and 'ε' not in self.first[valor[0]] :
                     return self.recursionTabla(valor[0], buscado, producciones, diccionario)
                 else:
                     producciones.pop()
@@ -163,25 +165,17 @@ class TopDownParsing:
                 return producciones[0]
 
     def calculateTabla(self):
-        if self.LL1:
-            self.tabla = pd.DataFrame(index=list(
-            self.gramatica.keys()), columns=list(self.terminales.keys()))
+            self.tabla = pd.DataFrame(index=list(self.gramatica.keys()), columns=list(self.terminales.keys()))
             for noTerminal in self.tabla.index:
                 for terminal in self.tabla.columns:
                     auxDict = self.gramatica.copy()
                     if(terminal in self.first[noTerminal]):
                         agregado = self.recursionTabla(
                             noTerminal, terminal, [], auxDict)
-                        if agregado == None:
-                            auxDict[noTerminal]
-                            agregado = self.recursionTabla(
-                                noTerminal, terminal, [], auxDict)
                         self.tabla.at[noTerminal, terminal] = agregado
                     if('ε' in self.first[noTerminal]):
                         for valor in self.follow[noTerminal]:
                             self.tabla.at[noTerminal, valor] = 'ε'
-        else:
-            print("No calculo de tabla ,debido a que no es LL1")
 
     def firstCadena(self, cadena):
         firstC = set()
@@ -200,12 +194,41 @@ class TopDownParsing:
                 print(e)
         return firstC
 
+    def analizarCadena(self, cadena):
+        proceso = pd.DataFrame(columns=['PILA', 'INPUT'])
+        input = list(cadena)
+        input.append("$")
+        pila = list(next(iter(self.gramatica)))
+        pila.append("$")
+        try:
+            while(pila):
+                proceso.loc[len(proceso)] = [' '.join(pila), ' '.join(input)]
+                if (pila[0] == input[0]):
+                    pila.pop(0)
+                    input.pop(0)
+                    continue
+                if self.tabla.loc[pila[0], input[0]] != 'ε':
+                    direccion = self.tabla.loc[pila[0], input[0]]
+                    direccion = direccion[::-1]
+                    pila.pop(0)
+                    for caracter in direccion:
+                        pila.insert(0, caracter)
+                    continue
+                if self.tabla.loc[pila[0], input[0]] == 'ε':
+                    pila.pop(0)
+                    continue
+            return proceso
+        except KeyError:
+            return "La cadena ingresada no pertenece a la gramatica "
+
+        
+
     def calculateCondiciones(self):
         dictAux = {k: v[:] for k, v in self.gramatica.items()}
         pass
 
-
-a = TopDownParsing({"E": ["TA"], "A": ["+TA", "ε"],"T": ["FB"], "B": ["*FB", "ε"], "F": ["(E)", "i"]})
+'''
+#a = TopDownParsing({"E": ["TA"], "A": ["+TA", "ε"],"T": ["FB"], "B": ["*FB", "ε"], "F": ["(E)", "i"]})
 #a= TopDownParsing({"S":["L=R","R"],"R":["L"],"L":["*R","i"]})
 #a= TopDownParsing({"S":["aaSb","cSb","b"]})
 #a= TopDownParsing({"S":["aSc","B","ε"],"B":["bBc","ε"]})
@@ -214,6 +237,7 @@ a = TopDownParsing({"E": ["TA"], "A": ["+TA", "ε"],"T": ["FB"], "B": ["*FB", "�
 #a= TopDownParsing({"S" :["aSb", "c"]})
 #a = TopDownParsing({"R": ["EA"], "A": ["EA", "ε"],"E": ["CB"], "B": ["CB", "ε"],"C":["L","(R)"],"L":["a","b","c"]})
 # a = TopDownParsing({"E": ["E+T","E-T","T"], "T": ["T*F", "T/F","F"],"F": ["(E)","n"]})# problema tabla
+a = TopDownParsing({"S": ["ABC"], "A": ["a", "ε"],"B": ["b","ε"], "C": ["c", "D"],"D":["d"]})
 
 
 a.nT()
@@ -235,7 +259,8 @@ a.calculateTabla()
 # print(a.terminales)
 print(a.tabla)
 print(a.firstCadena("BPε"))
-print(a.calculateCondiciones)
-# print(a.gramatica)
+print(a.analizarCadena("a"))
+# print(a.gramatica)'''
+
 
 
