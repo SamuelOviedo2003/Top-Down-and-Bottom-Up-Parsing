@@ -227,7 +227,7 @@ class TopDownParsing:
         dictAux = {k: v[:] for k, v in self.gramatica.items()}
         pass
 
-'''
+
 #a = TopDownParsing({"E": ["TA"], "A": ["+TA", "ε"],"T": ["FB"], "B": ["*FB", "ε"], "F": ["(E)", "i"]})
 #a= TopDownParsing({"S":["L=R","R"],"R":["L"],"L":["*R","i"]})
 #a= TopDownParsing({"S":["aaSb","cSb","b"]})
@@ -237,8 +237,10 @@ class TopDownParsing:
 #a= TopDownParsing({"S" :["aSb", "c"]})
 #a = TopDownParsing({"R": ["EA"], "A": ["EA", "ε"],"E": ["CB"], "B": ["CB", "ε"],"C":["L","(R)"],"L":["a","b","c"]})
 # a = TopDownParsing({"E": ["E+T","E-T","T"], "T": ["T*F", "T/F","F"],"F": ["(E)","n"]})# problema tabla
-a = TopDownParsing({"S": ["ABC"], "A": ["a", "ε"],"B": ["b","ε"], "C": ["c", "D"],"D":["d"]})
+#a = TopDownParsing({"S": ["ABC"], "A": ["a", "ε"],"B": ["b","ε"], "C": ["c", "D"],"D":["d"]})
+a = TopDownParsing({"E" : ["E+T", "T"], "T" : ["T*F", "F"], "F" : ["(E)", "i"]})
 
+'''
 
 a.nT()
 a.calculateFirst()

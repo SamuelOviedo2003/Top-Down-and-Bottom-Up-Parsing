@@ -1,4 +1,5 @@
 from tdParsing import TopDownParsing
+from buParsing import BottonUpParsing
 
 if __name__ == '__main__':
     print("| Desea analizar un:   |")
@@ -32,6 +33,19 @@ if __name__ == '__main__':
         print("")
 
     elif opcion == 2:
-        print("En proceso2")
+        gramatica = {}
+        numNoTerminales = int(input("Cuantos no-terminales hay? "))
+        for i in range(numNoTerminales):
+            noTerminal = input("no-terminal "+str(i+1)+": ")
+            gramatica[noTerminal] = []
+            print(
+                "Ingresa las derivaciones empezando con el noTerminal inicial , cuando termine con cada una digite '$' para seguir con la siguiente")
+            derivacion = input("")
+            while(derivacion != "$"):
+                gramatica[noTerminal].append(derivacion)
+                derivacion = input("")
+        
+        
+        
     else:
         print("Seleccione una opcion valida")
