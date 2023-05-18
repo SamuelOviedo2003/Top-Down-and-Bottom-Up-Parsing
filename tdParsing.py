@@ -177,11 +177,14 @@ class TopDownParsing:
                         for valor in self.follow[noTerminal]:
                             self.tabla.at[noTerminal, valor] = 'ε'
 
-    def firstCadena(self, cadena):
+    def firstCadena(self, cadena, condicion):
         firstC = set()
         for i in cadena:
             try:
-                if i == 'ε':
+                if i == 'ε' and condicion==False:
+                    continue
+                if i == 'ε' and condicion==True:
+                    firstC.update('ε')
                     continue
                 if 'ε' not in self.first[i]:
                     firstC.update(self.first[i])
@@ -225,11 +228,36 @@ class TopDownParsing:
 
     def calculateCondiciones(self):
         dictAux = {k: v[:] for k, v in self.gramatica.items()}
-        pass
+        for llave in dictAux.keys():
+            listaFirsts=[]
+            if len(dictAux[llave]) >1:
+                for valor in dictAux[llave]:
+                    listaAux=self.firstCadena(valor,True)
+                    listaFirsts.append(listaAux)
+            for conjunto1 in listaFirsts:
+                for conjunto2 in listaFirsts:
+                    if listaFirsts.index(conjunto1)==listaFirsts.index(conjunto2):
+                        continue
+                    interseccion = conjunto1.intersection(conjunto2)
+                    if len(interseccion) != 0:
+                        print("dedibo a los siguientes valores la gramatica no es LL1: ")
+                        print(interseccion)
+                        return False
+                    if len(interseccion) == 0:
+                        return True
+                    
+            #print(listaFirsts)
+
+        
+        
+            
+            
+            
+            
 
 
-#a = TopDownParsing({"E": ["TA"], "A": ["+TA", "ε"],"T": ["FB"], "B": ["*FB", "ε"], "F": ["(E)", "i"]})
-#a= TopDownParsing({"S":["L=R","R"],"R":["L"],"L":["*R","i"]})
+a = TopDownParsing({"E": ["TA"], "A": ["+TA", "ε"],"T": ["FB"], "B": ["*FB", "ε"], "F": ["(E)", "i"]})
+#a= TopDownParsing({"S":["L=R","R"],"L":["*R","i"],"R":["L","i"]})
 #a= TopDownParsing({"S":["aaSb","cSb","b"]})
 #a= TopDownParsing({"S":["aSc","B","ε"],"B":["bBc","ε"]})
 #a = TopDownParsing({"A": ["BCD","Aa"], "B": ["b", "ε"],"C": ["c", "ε"], "D": ["d", "Ce"]})
@@ -238,10 +266,8 @@ class TopDownParsing:
 #a = TopDownParsing({"R": ["EA"], "A": ["EA", "ε"],"E": ["CB"], "B": ["CB", "ε"],"C":["L","(R)"],"L":["a","b","c"]})
 # a = TopDownParsing({"E": ["E+T","E-T","T"], "T": ["T*F", "T/F","F"],"F": ["(E)","n"]})# problema tabla
 #a = TopDownParsing({"S": ["ABC"], "A": ["a", "ε"],"B": ["b","ε"], "C": ["c", "D"],"D":["d"]})
-a = TopDownParsing({"E" : ["E+T", "T"], "T" : ["T*F", "F"], "F" : ["(E)", "i"]})
 
 '''
-
 a.nT()
 a.calculateFirst()
 
@@ -260,9 +286,11 @@ a.calculateTabla()
 # print(a.first)
 # print(a.terminales)
 print(a.tabla)
-print(a.firstCadena("BPε"))
-print(a.analizarCadena("a"))
+print(a.firstCadena("Bε",False))
+print(a.analizarCadena("i*i+i"))
+print(a.calculateCondiciones())
 # print(a.gramatica)'''
+
 
 
 
