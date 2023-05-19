@@ -448,14 +448,14 @@ follow = {'a' : ['NA'], 'b' : ['NA'], 'c' : ['NA'], 'S': ['$', 'b']}
 
 
 
-gramatica  = {"S": ["aaSb", "cSb", "b"]}
+#gramatica  = {"S": ["aaSb", "cSb", "b"]}
 #gramatica = {"S":["L=R","R"],"L":["*R","i"],"R":["L", "i"]}
 
 #gramatica = {"A": ["BCD","Aa"], "B": ["b", "ε"],"C": ["c", "ε"], "D": ["d", "Ce"]}
 
-#gramatica = {"E" : ["E+T", "T"], "T" : ["T*F", "F"], "F" : ["(E)", "i"]}
+gramatica = {"E" : ["E+T", "T"], "T" : ["T*F", "F"], "F" : ["(E)", "i"]}
 
-#a= td.TopDownParsing({"S":["L=R","R"],"R":["L"],"L":["*R","i"]})
+#ca= td.TopDownParsing({"S":["L=R","R"],"R":["L"],"L":["*R","i"]})
 
 
 
@@ -471,13 +471,14 @@ bu.noterminalprima()
 #print(bu.GoTo(estado0, 'T'))
 
 d1, d2, d3 = bu.LR0()
-#print(f'd1: {d1}, d2: {d2}, d3: {d3}')
+print(f'd1: {d1}, d2: {d2}, d3: {d3}')
 
-#accion =  bu.action(0, "F")
+accion =  bu.action(0, "F")
 
-#print (f'accion: {accion}')
+print (f'accion: {accion}')
 
 
-#print(bu.SLR())
+print(bu.SLR())
 
-print(bu.parsing('aacbbb'))
+print(bu.parsing('i+i+i'))
+#print(a)

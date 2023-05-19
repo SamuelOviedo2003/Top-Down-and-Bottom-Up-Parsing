@@ -129,8 +129,9 @@ class TopDownParsing:
                                     validacion = True
                                 if 'ε' not in self.first[primero2]:
                                     validacion = False
-                                    break
+                                    break    
                             if key not in self.follow.keys():
+                                self.follow[key] = set()
                                 cola.append(key)
                                 cola.append(llave)
                             if llave not in self.follow:
@@ -149,20 +150,14 @@ class TopDownParsing:
                     except ValueError:
                         pass
         # return indice
-
     def recursionTabla(self, llave, buscado, produccion: List[str], diccionario):
-        producciones = produccion
-        for valor in diccionario.get(llave):
-            producciones.append(valor)
-            if(valor[0] != buscado):
-                if valor[0].isupper() and 'ε' in self.first[valor[0]] :
-                    return "1"
-                if valor[0].isupper() and 'ε' not in self.first[valor[0]] :
-                    return self.recursionTabla(valor[0], buscado, producciones, diccionario)
-                else:
-                    producciones.pop()
-            if(valor[0] == buscado):
-                return producciones[0]
+        for palabra in diccionario.get(llave):
+            for letra in palabra:
+                if buscado not in self.first[letra] and 'ε' not in self.first[letra] :
+                    break
+                if buscado in self.first[letra]:
+                    return palabra
+        
 
     def calculateTabla(self):
             self.tabla = pd.DataFrame(index=list(self.gramatica.keys()), columns=list(self.terminales.keys()))
@@ -234,17 +229,23 @@ class TopDownParsing:
                 for valor in dictAux[llave]:
                     listaAux=self.firstCadena(valor,True)
                     listaFirsts.append(listaAux)
-            for conjunto1 in listaFirsts:
-                for conjunto2 in listaFirsts:
-                    if listaFirsts.index(conjunto1)==listaFirsts.index(conjunto2):
+            for i, conjunto1 in enumerate(listaFirsts):
+                for j, conjunto2 in enumerate(listaFirsts):
+                    if i == j:
                         continue
                     interseccion = conjunto1.intersection(conjunto2)
                     if len(interseccion) != 0:
                         print("dedibo a los siguientes valores la gramatica no es LL1: ")
                         print(interseccion)
                         return False
-                    if len(interseccion) == 0:
-                        return True
+                    if "ε" in conjunto1:
+                        interseccion2 = conjunto2.intersection(self.follow[llave])
+                        if len(interseccion2) != 0:
+                            print("dedibo a los siguientes valores la gramatica no es LL1: ")
+                            print(interseccion2)
+                            return False   
+        return True                 
+                    
                     
             #print(listaFirsts)
 
@@ -255,19 +256,20 @@ class TopDownParsing:
             
             
 
-
-a = TopDownParsing({"E": ["TA"], "A": ["+TA", "ε"],"T": ["FB"], "B": ["*FB", "ε"], "F": ["(E)", "i"]})
+'''
+#a = TopDownParsing({"E": ["TA"], "A": ["+TA", "ε"],"T": ["FB"], "B": ["*FB", "ε"], "F": ["(E)", "i"]})
 #a= TopDownParsing({"S":["L=R","R"],"L":["*R","i"],"R":["L","i"]})
 #a= TopDownParsing({"S":["aaSb","cSb","b"]})
 #a= TopDownParsing({"S":["aSc","B","ε"],"B":["bBc","ε"]})
-#a = TopDownParsing({"A": ["BCD","Aa"], "B": ["b", "ε"],"C": ["c", "ε"], "D": ["d", "Ce"]})
-# a = TopDownParsing({"S": ["ABC","i","ε"], "A": ["BC", "a"],"B": ["b", "ε"], "C": ["c"]})#first
+#a = TopDownParsing({"A": ["BCD"], "B": ["b", "ε"],"C": ["c","D"], "D": ["d"]})
+#a = TopDownParsing({"T": ["VA"], "A": ["bTA", "ε"],"V": ["cV", "c"]})
+#a = TopDownParsing({"S": ["ABC","i","ε"], "A": ["BC", "a"],"B": ["b", "ε"], "C": ["c"]})#first
 #a= TopDownParsing({"S" :["aSb", "c"]})
 #a = TopDownParsing({"R": ["EA"], "A": ["EA", "ε"],"E": ["CB"], "B": ["CB", "ε"],"C":["L","(R)"],"L":["a","b","c"]})
-# a = TopDownParsing({"E": ["E+T","E-T","T"], "T": ["T*F", "T/F","F"],"F": ["(E)","n"]})# problema tabla
+#a = TopDownParsing({"E": ["E+T","E-T","T"], "T": ["T*F", "T/F","F"],"F": ["(E)","n"]})# recursion izquierda
 #a = TopDownParsing({"S": ["ABC"], "A": ["a", "ε"],"B": ["b","ε"], "C": ["c", "D"],"D":["d"]})
 
-'''
+
 a.nT()
 a.calculateFirst()
 
