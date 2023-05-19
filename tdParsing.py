@@ -101,24 +101,27 @@ class TopDownParsing:
                     try:
                         longitud = len(cadena)
                         indice = cadena.index(llave)
-                        siguiente = ''
-                        if(indice == longitud - 1):
+                        indices = deque([i for i, c in enumerate(cadena) if c == llave])
+                        while(indices):
+                            indice=indices.popleft()
                             siguiente = ''
-                        else:
-                            siguiente = cadena[indice+1]
-                        if siguiente != '':
-                            if llave not in self.follow:
-                                self.follow[llave] = set()
-                            recorrido = deque(cadena[indice+1:])
-                            while(recorrido):
-                                primero1 = recorrido.popleft()
-                                if 'ε' in self.first.get(primero1):
-                                    self.follow[llave].update(
-                                        list(filter(lambda v: v != 'ε', self.first.get(primero1))))
-                                if 'ε' not in self.first.get(primero1):
-                                    self.follow[llave].update(
-                                        list(filter(lambda v: v != 'ε', self.first.get(primero1))))
-                                    break
+                            if(indice == longitud - 1):
+                                siguiente = ''
+                            else:
+                                siguiente = cadena[indice+1]
+                            if siguiente != '':
+                                if llave not in self.follow:
+                                    self.follow[llave] = set()
+                                recorrido = deque(cadena[indice+1:])
+                                while(recorrido):
+                                    primero1 = recorrido.popleft()
+                                    if 'ε' in self.first.get(primero1):
+                                        self.follow[llave].update(
+                                            list(filter(lambda v: v != 'ε', self.first.get(primero1))))
+                                    if 'ε' not in self.first.get(primero1):
+                                        self.follow[llave].update(
+                                            list(filter(lambda v: v != 'ε', self.first.get(primero1))))
+                                        break
 
                         if siguiente != '' and 'ε' in self.first[siguiente]:
                             validacion = False
@@ -129,7 +132,7 @@ class TopDownParsing:
                                     validacion = True
                                 if 'ε' not in self.first[primero2]:
                                     validacion = False
-                                    break
+                                    break    
                             if key not in self.follow.keys():
                                 self.follow[key] = set()
                                 cola.append(key)
@@ -150,20 +153,14 @@ class TopDownParsing:
                     except ValueError:
                         pass
         # return indice
-
     def recursionTabla(self, llave, buscado, produccion: List[str], diccionario):
-        producciones = produccion
-        for valor in diccionario.get(llave):
-            producciones.append(valor)
-            if(valor[0] != buscado):
-                if valor[0].isupper() and 'ε' in self.first[valor[0]] :
-                    return "1"
-                if valor[0].isupper() and 'ε' not in self.first[valor[0]] :
-                    return self.recursionTabla(valor[0], buscado, producciones, diccionario)
-                else:
-                    producciones.pop()
-            if(valor[0] == buscado):
-                return producciones[0]
+        for palabra in diccionario.get(llave):
+            for letra in palabra:
+                if buscado not in self.first[letra] and 'ε' not in self.first[letra] :
+                    break
+                if buscado in self.first[letra]:
+                    return palabra
+        
 
     def calculateTabla(self):
             self.tabla = pd.DataFrame(index=list(self.gramatica.keys()), columns=list(self.terminales.keys()))
@@ -178,11 +175,14 @@ class TopDownParsing:
                         for valor in self.follow[noTerminal]:
                             self.tabla.at[noTerminal, valor] = 'ε'
 
-    def firstCadena(self, cadena):
+    def firstCadena(self, cadena, condicion):
         firstC = set()
         for i in cadena:
             try:
-                if i == 'ε':
+                if i == 'ε' and condicion==False:
+                    continue
+                if i == 'ε' and condicion==True:
+                    firstC.update('ε')
                     continue
                 if 'ε' not in self.first[i]:
                     firstC.update(self.first[i])
@@ -220,28 +220,59 @@ class TopDownParsing:
                     continue
             return proceso
         except KeyError:
-            return "La cadena ingresada no pertenece a la gramatica "
+            return False
 
         
 
     def calculateCondiciones(self):
         dictAux = {k: v[:] for k, v in self.gramatica.items()}
-        pass
+        for llave in dictAux.keys():
+            listaFirsts=[]
+            if len(dictAux[llave]) >1:
+                for valor in dictAux[llave]:
+                    listaAux=self.firstCadena(valor,True)
+                    listaFirsts.append(listaAux)
+            for i, conjunto1 in enumerate(listaFirsts):
+                for j, conjunto2 in enumerate(listaFirsts):
+                    if i == j:
+                        continue
+                    interseccion = conjunto1.intersection(conjunto2)
+                    if len(interseccion) != 0:
+                        print("dedibo a los siguientes valores la gramatica no es LL1: ")
+                        print(interseccion)
+                        return False
+                    if "ε" in conjunto1:
+                        interseccion2 = conjunto2.intersection(self.follow[llave])
+                        if len(interseccion2) != 0:
+                            print("dedibo a los siguientes valores la gramatica no es LL1: ")
+                            print(interseccion2)
+                            return False   
+        return True                 
+                    
+                    
+            #print(listaFirsts)
 
-
+        
+        
+            
+            
+            
+            
+'''
 #a = TopDownParsing({"E": ["TA"], "A": ["+TA", "ε"],"T": ["FB"], "B": ["*FB", "ε"], "F": ["(E)", "i"]})
-#a= TopDownParsing({"S":["L=R","R"],"R":["L"],"L":["*R","i"]})
+#a = TopDownParsing({"S": ["AA"], "A": ["aA", "b"]})
+#a = TopDownParsing({"S": ["AaAb","BbBa"], "A": ["ε"], "B": ["ε"]})
+#a= TopDownParsing({"S":["L=R","R"],"L":["*R","i"],"R":["L","i"]})
 #a= TopDownParsing({"S":["aaSb","cSb","b"]})
 #a= TopDownParsing({"S":["aSc","B","ε"],"B":["bBc","ε"]})
-#a = TopDownParsing({"A": ["BCD","Aa"], "B": ["b", "ε"],"C": ["c", "ε"], "D": ["d", "Ce"]})
-# a = TopDownParsing({"S": ["ABC","i","ε"], "A": ["BC", "a"],"B": ["b", "ε"], "C": ["c"]})#first
+#a = TopDownParsing({"A": ["BCD"], "B": ["b", "ε"],"C": ["c","D"], "D": ["d"]})
+#a = TopDownParsing({"T": ["VA"], "A": ["bTA", "ε"],"V": ["cV", "c"]})
+#a = TopDownParsing({"S": ["ABC","i","ε"], "A": ["BC", "a"],"B": ["b", "ε"], "C": ["c"]})#first
 #a= TopDownParsing({"S" :["aSb", "c"]})
 #a = TopDownParsing({"R": ["EA"], "A": ["EA", "ε"],"E": ["CB"], "B": ["CB", "ε"],"C":["L","(R)"],"L":["a","b","c"]})
-# a = TopDownParsing({"E": ["E+T","E-T","T"], "T": ["T*F", "T/F","F"],"F": ["(E)","n"]})# problema tabla
+#a = TopDownParsing({"E": ["E+T","E-T","T"], "T": ["T*F", "T/F","F"],"F": ["(E)","n"]})# recursion izquierda
 #a = TopDownParsing({"S": ["ABC"], "A": ["a", "ε"],"B": ["b","ε"], "C": ["c", "D"],"D":["d"]})
-a = TopDownParsing({"E" : ["E+T", "T"], "T" : ["T*F", "F"], "F" : ["(E)", "i"]})
 
-'''
 
 a.nT()
 a.calculateFirst()
@@ -261,9 +292,16 @@ a.calculateTabla()
 # print(a.first)
 # print(a.terminales)
 print(a.tabla)
-print(a.firstCadena("BPε"))
-print(a.analizarCadena("a"))
+print(a.firstCadena("Bε",False))
+listaCadenas =["i+i","j","(i*i)"]
+print("Validacion de cadenas por lista directa en el codigo: ")
+for cadena in listaCadenas:
+    respuesta = a.analizarCadena(cadena)
+    print(f"{cadena} : {respuesta}")
+    print("")
+print(a.calculateCondiciones())
 # print(a.gramatica)'''
+
 
 
 

@@ -536,9 +536,9 @@ gramatica = {"S": ["ABC", "d"], "A": ["aA", "ε"], "B": ["bB" , "ε"], "C": ["cC
 
 #gramatica = {"A": ["BCD","Aa"], "B": ["b", "ε"],"C": ["c", "ε"], "D": ["d", "Ce"]}
 
-#gramatica = {"E" : ["E+T", "T"], "T" : ["T*F", "F"], "F" : ["(E)", "i"]}
+gramatica = {"E" : ["E+T", "T"], "T" : ["T*F", "F"], "F" : ["(E)", "i"]}
 
-#a= td.TopDownParsing({"S":["L=R","R"],"R":["L"],"L":["*R","i"]})
+#ca= td.TopDownParsing({"S":["L=R","R"],"R":["L"],"L":["*R","i"]})
 
 
 
@@ -554,11 +554,11 @@ bu.noterminalprima()
 #print(bu.GoTo(estado0, 'T'))
 
 d1, d2, d3 = bu.LR0()
-#print(f'd1: {d1}, d2: {d2}, d3: {d3}')
+print(f'd1: {d1}, d2: {d2}, d3: {d3}')
 
 #accion =  bu.action(5, "a")
 
-#print (f'accion: {accion}')
+print (f'accion: {accion}')
 
 
 
