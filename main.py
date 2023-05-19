@@ -19,18 +19,34 @@ if __name__ == '__main__':
             while(derivacion != "$"):
                 gramatica[noTerminal].append(derivacion)
                 derivacion = input("")
-        L = TopDownParsing(gramatica)
-        print("First: ")
+        L = TopDownParsing({"E": ["TA"], "A": ["+TA", "ε"],"T": ["FB"], "B": ["*FB", "ε"], "F": ["(E)", "i"]})
         L.nT()
         L.calculateFirst()
-        for clave, valores in L.first.items():
-            print(f"{clave} : {valores}")
-        print("")
-        print("Follow: ")
         L.calculateFollow()
-        for clave, valores in L.follow.items():
-            print(f"{clave} : {valores}")
-        print("")
+        print(L.calculateCondiciones())
+        if L.calculateCondiciones()==True:
+            print("First: ")
+            for clave, valores in L.first.items():
+                print(f"{clave} : {valores}")
+            print("")
+            print("Follow: ")
+            for clave, valores in L.follow.items():
+                print(f"{clave} : {valores}")
+            print("")
+            print("La tabla para analisis sintactico es: ")
+            L.calculateTabla()
+            print(L.tabla)
+            print("")
+            ################################
+            listaCadenas =["i+i","j","(i*i)"]
+            ################################
+            print("Validacion de cadenas por lista directa en el codigo: ")
+            for cadena in listaCadenas:
+                respuesta = L.analizarCadena(cadena)
+                print(f"{cadena} : {respuesta}")
+                print("")
+        else:
+            print("la gramatica no es LL1")
 
     elif opcion == 2:
         gramatica = {}

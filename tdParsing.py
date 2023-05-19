@@ -217,7 +217,7 @@ class TopDownParsing:
                     continue
             return proceso
         except KeyError:
-            return "La cadena ingresada no pertenece a la gramatica "
+            return False
 
         
 
@@ -255,9 +255,8 @@ class TopDownParsing:
             
             
             
-
 '''
-#a = TopDownParsing({"E": ["TA"], "A": ["+TA", "ε"],"T": ["FB"], "B": ["*FB", "ε"], "F": ["(E)", "i"]})
+a = TopDownParsing({"E": ["TA"], "A": ["+TA", "ε"],"T": ["FB"], "B": ["*FB", "ε"], "F": ["(E)", "i"]})
 #a= TopDownParsing({"S":["L=R","R"],"L":["*R","i"],"R":["L","i"]})
 #a= TopDownParsing({"S":["aaSb","cSb","b"]})
 #a= TopDownParsing({"S":["aSc","B","ε"],"B":["bBc","ε"]})
@@ -289,7 +288,12 @@ a.calculateTabla()
 # print(a.terminales)
 print(a.tabla)
 print(a.firstCadena("Bε",False))
-print(a.analizarCadena("i*i+i"))
+listaCadenas =["i+i","j","(i*i)"]
+print("Validacion de cadenas por lista directa en el codigo: ")
+for cadena in listaCadenas:
+    respuesta = a.analizarCadena(cadena)
+    print(f"{cadena} : {respuesta}")
+    print("")
 print(a.calculateCondiciones())
 # print(a.gramatica)'''
 

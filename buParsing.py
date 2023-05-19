@@ -444,7 +444,7 @@ d1, d2, d3 = LR0(gramatica, "S'")
 
 follow = {'a' : ['NA'], 'b' : ['NA'], 'c' : ['NA'], 'S': ['$', 'b']}
 
-'''
+
 
 
 
@@ -481,4 +481,4 @@ print (f'accion: {accion}')
 print(bu.SLR())
 
 print(bu.parsing('i+i+i'))
-#print(a)
+#print(a)'''
