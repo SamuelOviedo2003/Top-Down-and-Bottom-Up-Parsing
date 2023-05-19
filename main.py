@@ -19,7 +19,7 @@ if __name__ == '__main__':
             while(derivacion != "$"):
                 gramatica[noTerminal].append(derivacion)
                 derivacion = input("")
-        L = TopDownParsing({"E": ["TA"], "A": ["+TA", "ε"],"T": ["FB"], "B": ["*FB", "ε"], "F": ["(E)", "i"]})
+        L = TopDownParsing(gramatica)
         L.nT()
         L.calculateFirst()
         L.calculateFollow()
@@ -38,11 +38,18 @@ if __name__ == '__main__':
             print(L.tabla)
             print("")
             ################################
-            listaCadenas =["i+i","j","(i*i)"]
+            listaCadenasComprobacion =["i+i","j","(i*i)"]
+            listaCadenasFirst =["i+i","j","(i*i)"]
             ################################
             print("Validacion de cadenas por lista directa en el codigo: ")
-            for cadena in listaCadenas:
+            for cadena in listaCadenasComprobacion:
                 respuesta = L.analizarCadena(cadena)
+                print(f"{cadena} : {respuesta}")
+                print("")
+            print("")
+            print("first de cadenas por lista directa en el codigo: ")
+            for cadena in listaCadenasFirst:
+                respuesta = L.firstCadena(cadena,False)
                 print(f"{cadena} : {respuesta}")
                 print("")
         else:

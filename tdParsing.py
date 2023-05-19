@@ -101,24 +101,27 @@ class TopDownParsing:
                     try:
                         longitud = len(cadena)
                         indice = cadena.index(llave)
-                        siguiente = ''
-                        if(indice == longitud - 1):
+                        indices = deque([i for i, c in enumerate(cadena) if c == llave])
+                        while(indices):
+                            indice=indices.popleft()
                             siguiente = ''
-                        else:
-                            siguiente = cadena[indice+1]
-                        if siguiente != '':
-                            if llave not in self.follow:
-                                self.follow[llave] = set()
-                            recorrido = deque(cadena[indice+1:])
-                            while(recorrido):
-                                primero1 = recorrido.popleft()
-                                if 'ε' in self.first.get(primero1):
-                                    self.follow[llave].update(
-                                        list(filter(lambda v: v != 'ε', self.first.get(primero1))))
-                                if 'ε' not in self.first.get(primero1):
-                                    self.follow[llave].update(
-                                        list(filter(lambda v: v != 'ε', self.first.get(primero1))))
-                                    break
+                            if(indice == longitud - 1):
+                                siguiente = ''
+                            else:
+                                siguiente = cadena[indice+1]
+                            if siguiente != '':
+                                if llave not in self.follow:
+                                    self.follow[llave] = set()
+                                recorrido = deque(cadena[indice+1:])
+                                while(recorrido):
+                                    primero1 = recorrido.popleft()
+                                    if 'ε' in self.first.get(primero1):
+                                        self.follow[llave].update(
+                                            list(filter(lambda v: v != 'ε', self.first.get(primero1))))
+                                    if 'ε' not in self.first.get(primero1):
+                                        self.follow[llave].update(
+                                            list(filter(lambda v: v != 'ε', self.first.get(primero1))))
+                                        break
 
                         if siguiente != '' and 'ε' in self.first[siguiente]:
                             validacion = False
@@ -256,7 +259,9 @@ class TopDownParsing:
             
             
 '''
-a = TopDownParsing({"E": ["TA"], "A": ["+TA", "ε"],"T": ["FB"], "B": ["*FB", "ε"], "F": ["(E)", "i"]})
+#a = TopDownParsing({"E": ["TA"], "A": ["+TA", "ε"],"T": ["FB"], "B": ["*FB", "ε"], "F": ["(E)", "i"]})
+#a = TopDownParsing({"S": ["AA"], "A": ["aA", "b"]})
+#a = TopDownParsing({"S": ["AaAb","BbBa"], "A": ["ε"], "B": ["ε"]})
 #a= TopDownParsing({"S":["L=R","R"],"L":["*R","i"],"R":["L","i"]})
 #a= TopDownParsing({"S":["aaSb","cSb","b"]})
 #a= TopDownParsing({"S":["aSc","B","ε"],"B":["bBc","ε"]})
