@@ -45,7 +45,10 @@ if __name__ == '__main__':
                 gramatica[noTerminal].append(derivacion)
                 derivacion = input("")
         
-        
+        B = BottonUpParsing(gramatica)
+        B.funcionTerminales()
+        B.noterminalprima()
+        print(B.SLR())
         
     else:
         print("Seleccione una opcion valida")

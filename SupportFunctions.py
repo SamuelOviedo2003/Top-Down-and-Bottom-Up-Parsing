@@ -40,7 +40,7 @@ def casoEspecialKernel(lista):
     for i in range(0, len(lista)):
         cadena = lista[i]
         pos = cadena.find('·')
-        if pos == len(cadena) - 1:
+        if pos == len(cadena) - 1 or cadena == "·ε":
             del lista[i]
             lista.insert(0, cadena)
     return lista

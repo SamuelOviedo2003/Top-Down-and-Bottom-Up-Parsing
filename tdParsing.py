@@ -131,6 +131,7 @@ class TopDownParsing:
                                     validacion = False
                                     break
                             if key not in self.follow.keys():
+                                self.follow[key] = set()
                                 cola.append(key)
                                 cola.append(llave)
                             if llave not in self.follow:

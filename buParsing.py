@@ -103,11 +103,12 @@ class BottonUpParsing:
         i = 0
         j = 0
         lista = []
+        diccionarioEpsilon = {}
         diccionarioEstados = {}
         diccionarioKernels = {}
         diccionarioTrans = {}
         
-        bu.noterminalprima()
+        self.noterminalprima()
         
         diccionarioEstados[i] = self.closure(self.prima)
         lista.append(self.closure(self.prima))
@@ -122,6 +123,9 @@ class BottonUpParsing:
                     pos = elemento.find('·')
                     if pos + 1 >= len(elemento):
                         break
+                    elif  elemento[pos+1] == "ε":
+                        diccionarioEpsilon[j] = ["·ε"]
+                        continue
                     else:
                         simbolo = elemento[pos+1]
                     
@@ -143,6 +147,12 @@ class BottonUpParsing:
         
         diccionarioTrans[1].append(['$', 'acc'])
         
+        
+        if len(diccionarioEpsilon) != 0:
+            for k, v in diccionarioKernels.items():
+                if k in diccionarioEpsilon:
+                    diccionarioKernels[k]['Kernel'] = diccionarioKernels[k]['Kernel'] + diccionarioEpsilon[k]
+        
         return diccionarioEstados, diccionarioKernels, diccionarioTrans
 
 
@@ -154,7 +164,7 @@ class BottonUpParsing:
         accion = ''
         
         
-        d1, d2, d3 = bu.LR0()
+        d1, d2, d3 = self.LR0()
         
         
         self.noterminales = self.gramatica.keys()
@@ -168,23 +178,62 @@ class BottonUpParsing:
             
             lista = d2[estado]['Kernel']
             
+            
             if len(lista) >= 2:
                 lista = sf.casoEspecialKernel(lista)
-            
+                
             cadena = lista[0]
+            
             
             pos  = cadena.find('·')
             
-            if pos == len(cadena) - 1:
+            if pos == len(cadena) - 1  or cadena == "·ε":
+                
+                key = []
+                
+                for llave, valor in d1[estado].items():
+                    for element in valor:
+                        if cadena == element:
+                            key.append(llave)
                 
                 
-                key = [llave for llave, valor in d1[estado].items() if valor == [cadena]]
+                if len(key) >= 2:
+                    gramaticaSinPrima = self.gramatica
+                    del gramaticaSinPrima[self.prima]
+                    reglas  = sf.reglasDeDerivacion(gramaticaSinPrima)
+                    
+                    
+                    tdp = td.TopDownParsing(gramaticaSinPrima)
+                    tdp.nT()
+                    tdp.calculateFirst()
+                    tdp.calculateFollow()
+                    
+                    follow = []
+                    
+                    for terminal in key:
+                        #follow.append(list(tdp.follow[terminal]))
+                        follow  = follow + list(tdp.follow[terminal])
+                    
+                    follow = list(set(follow))
+                    
+                    
+                    if caracter in follow:                    
+                        accion = True
+                        return accion
+                    else:
+                        return accion
+                
                 key = str(key[0])
                 
-                cadena = cadena[:len(cadena) - 1]
+                if cadena == "·ε":
+                    cadena = "ε"
+                else:
+                    cadena = cadena[:len(cadena) - 1]
+                
                 gramaticaSinPrima = self.gramatica
                 del gramaticaSinPrima[self.prima]
                 reglas  = sf.reglasDeDerivacion(gramaticaSinPrima)
+                
                 
                 for i in range(0, len(reglas)):
                     if reglas[i] == cadena:
@@ -207,6 +256,9 @@ class BottonUpParsing:
                     tdp.calculateFollow()
                     
                     follow = list(tdp.follow[key])
+                    
+                    #print(f'key: {key}')
+                    #print(f'follow: {follow}')
                     
                     if caracter in follow:
                         reduce  = 'r' + str(posRegla)
@@ -248,11 +300,13 @@ class BottonUpParsing:
         mensaje  = ''
         
         
-        d1, d2, d3 = bu.LR0()
+        d1, d2, d3 = self.LR0()
         
         estados  = list(d1.keys())
         
         self.terminales.append("$")
+        if "ε" in self.terminales:
+            self.terminales.remove("ε")
         
         
         self.noterminales = list(self.noterminales)
@@ -444,11 +498,40 @@ d1, d2, d3 = LR0(gramatica, "S'")
 
 follow = {'a' : ['NA'], 'b' : ['NA'], 'c' : ['NA'], 'S': ['$', 'b']}
 
+
+#gramatica = {"E" : ["T+E", "T"], "T" : ["i"]}
+
+#gramatica = {"S": ["Aa" , "bAc", "Bc", "bBa"] , "A": ["d"], "B": ["d"]}
+    S -> ABC | Def
+    A -> aA | ε
+    B -> bB | ε
+    C -> cC | ε
+    D -> dD | ε
+    E -> eE | ε
+    F -> ε
+
+gramatica = {"S": ["ABC", "d"], "A": ["aA", "ε"], "B": ["bB" , "ε"], "C": ["cC" , "ε"], "D" : ["dD" , "ε"], "E": ["eE" , "ε"], "F": ["ε"]}
+
 '''
-
-
-
-gramatica  = {"S": ["aaSb", "cSb", "b"]}
+gramatica = {"S": ["ABC", "d"], "A": ["aA", "ε"], "B": ["bB" , "ε"], "C": ["cC" , "ε"], "D" : ["dD" , "ε"], "E": ["eE" , "ε"], "F": ["ε"]}
+#gramatica = {"S": ["aTb", "aR", "cT"], "T": ["d"], "R": ["d"]}
+#gramatica = { "E": ["E+T", "T", "V=E"], "T": ["(E)", "i"], "V": ["i"] }
+#gramatica = {"S": ["(L)", "x"], "L": ["S", "L,S"]}
+#gramatica = {"S" : ["aAc", "aBd"], "A" : ["z"], "B" : ["z"]}
+#gramatica = {"S": ["AxB", "B"], "A": ["yB", "z"], "B": ["A"]}
+#gramatica = {"E" : ["T+E","T"], "T": ["i*T", "i","(E)"]}
+#gramatica = {"S":  ["xAy", "xBy", "xAz"], "A": ["aS", "q"], "B": ["q"]}
+#gramatica = {"S" : ["AaAb", "BbBa"], "A": ["ε"], "B": ["ε"]}
+#gramatica = {"S": ["Aa" , "bAc", "Bc", "bBa"] , "A": ["d"], "B": ["d"]}
+#gramatica = {"S" : ["cAd"], "A": ["ab", "e"]}
+#gramatica = {"E" : ["T+E", "T"], "T" : ["i"]}
+#gramatica = {"E" : ["E+T", "T"], "T": ["TF", "F"], "F": ["F*", "a", "b"]}
+#gramatica  = {"S": ["AA"] , "A": ["aA", "b"]}
+#gramatica  = {"S" : ["AA"], "A": ["aA", "b"]}
+#gramatica  = {"S" : ["CC"], "C": ["cC", "d"]}
+#gramatica = { "E": ["E+T", "T"], "T": ["T*F", "F"], "F": ["i"] }
+#gramatica  = {"T": ["VP"], "P": ["bTP", "ε"] , "V": ["cV", "c"]}
+#gramatica  = {"S": ["aaSb", "cSb", "b"]}
 #gramatica = {"S":["L=R","R"],"L":["*R","i"],"R":["L", "i"]}
 
 #gramatica = {"A": ["BCD","Aa"], "B": ["b", "ε"],"C": ["c", "ε"], "D": ["d", "Ce"]}
@@ -473,11 +556,12 @@ bu.noterminalprima()
 d1, d2, d3 = bu.LR0()
 #print(f'd1: {d1}, d2: {d2}, d3: {d3}')
 
-#accion =  bu.action(0, "F")
+#accion =  bu.action(5, "a")
 
 #print (f'accion: {accion}')
 
 
-#print(bu.SLR())
 
-print(bu.parsing('aacbbb'))
+print(bu.SLR())
+
+#print(bu.parsing('aabb'))
