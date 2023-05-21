@@ -346,7 +346,9 @@ class BottonUpParsing:
         line = 2 
         
         gramaticaSinPrima = self.gramatica
-        del gramaticaSinPrima[self.prima]
+        
+        if self.prima in gramaticaSinPrima:
+            del gramaticaSinPrima[self.prima]
         reglas  = sf.reglasDeDerivacion(gramaticaSinPrima)
         
         
@@ -380,7 +382,7 @@ class BottonUpParsing:
             
             
             if accion == True or accion == '':
-                return 'Esta no es una cadena valida'
+                return 'No'
             
             elif accion[0] == 's':
                 
@@ -480,7 +482,40 @@ class BottonUpParsing:
         
         
         
-        return None
+        return 'Si'
+
+
+    def impresionLR0(self):
+        
+        d1, d2, d3 = self.LR0()
+        
+        estados  = list(d1.keys())
+        
+        for estado in estados:
+            data  = []        
+            
+            for clave, valores in d1[estado].items():
+                for valor in valores:
+                    if valor in d2[estado]['Kernel']:
+                        cadena = clave + ' --> ' + valor
+                        data.insert(0, [cadena])
+                    else:
+                        cadena  = clave + ' --> ' + valor
+                        data.append([cadena])
+            
+            
+            head  = [f'estado {estado}']
+            
+            print(tabulate(data, headers= head, tablefmt="psql"))
+            
+            print(" ")
+            
+            print("............................................")
+            
+            print(" ")
+        
+        return ''
+
 
 
 
@@ -513,7 +548,7 @@ follow = {'a' : ['NA'], 'b' : ['NA'], 'c' : ['NA'], 'S': ['$', 'b']}
 gramatica = {"S": ["ABC", "d"], "A": ["aA", "ε"], "B": ["bB" , "ε"], "C": ["cC" , "ε"], "D" : ["dD" , "ε"], "E": ["eE" , "ε"], "F": ["ε"]}
 
 '''
-gramatica = {"S": ["ABC", "d"], "A": ["aA", "ε"], "B": ["bB" , "ε"], "C": ["cC" , "ε"], "D" : ["dD" , "ε"], "E": ["eE" , "ε"], "F": ["ε"]}
+#gramatica = {"S": ["ABC", "d"], "A": ["aA", "ε"], "B": ["bB" , "ε"], "C": ["cC" , "ε"], "D" : ["dD" , "ε"], "E": ["eE" , "ε"], "F": ["ε"]}
 #gramatica = {"S": ["aTb", "aR", "cT"], "T": ["d"], "R": ["d"]}
 #gramatica = { "E": ["E+T", "T", "V=E"], "T": ["(E)", "i"], "V": ["i"] }
 #gramatica = {"S": ["(L)", "x"], "L": ["S", "L,S"]}
@@ -542,9 +577,9 @@ gramatica = {"E" : ["E+T", "T"], "T" : ["T*F", "F"], "F" : ["(E)", "i"]}
 
 
 
-bu  = BottonUpParsing(gramatica)
-bu.funcionTerminales()
-bu.noterminalprima()
+#bu  = BottonUpParsing(gramatica)
+#bu.funcionTerminales()
+#bu.noterminalprima()
 
 #print(bu.gramatica)
 
@@ -553,15 +588,15 @@ bu.noterminalprima()
 
 #print(bu.GoTo(estado0, 'T'))
 
-d1, d2, d3 = bu.LR0()
-print(f'd1: {d1}, d2: {d2}, d3: {d3}')
+#d1, d2, d3 = bu.LR0()
+#print(f'd1: {d1}, d2: {d2}, d3: {d3}')
 
 #accion =  bu.action(5, "a")
 
-print (f'accion: {accion}')
+#print (f'accion: {accion}')
 
+#bu.impresionLR0()
 
+#print(bu.SLR())
 
-print(bu.SLR())
-
-#print(bu.parsing('aabb'))
+#print(bu.parsing('j'))

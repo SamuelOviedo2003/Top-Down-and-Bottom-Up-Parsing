@@ -71,7 +71,22 @@ if __name__ == '__main__':
         B = BottonUpParsing(gramatica)
         B.funcionTerminales()
         B.noterminalprima()
+        B.impresionLR0()
+        print(" ")
+        print(" --------- ")
         print(B.SLR())
+        print(" ")
+        print(" --------- ")
+        ################################
+        listaCadenasComprobacion =["i+i","j","(i*i)"]
+        ################################
+        print("Validacion de cadenas por lista directa en el codigo: ")
+        for cadena in listaCadenasComprobacion:
+            respuesta = B.parsing(cadena)
+            print("")
+            print(f"{cadena} : {respuesta}")
+            print("")
+        print("")
         
     else:
         print("Seleccione una opcion valida")
