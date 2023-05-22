@@ -6,9 +6,11 @@ if __name__ == '__main__':
     print("| 1) Top-Down Parsing  |")
     print("| 2) Bottom-Up Parsing |")
     opcion = int(input(""))
+    GramaticaCodigo = {"E": ["TA"], "A": ["+TA", "ε"],"T": ["FB"], "B": ["*FB", "ε"], "F": ["(E)", "i"]}
 
     if opcion == 1:
-        gramatica = {}
+        gramatica = GramaticaCodigo
+        '''
         numNoTerminales = int(input("Cuantos no-terminales hay? "))
         for i in range(numNoTerminales):
             noTerminal = input("no-terminal "+str(i+1)+": ")
@@ -18,7 +20,7 @@ if __name__ == '__main__':
             derivacion = input("")
             while(derivacion != "$"):
                 gramatica[noTerminal].append(derivacion)
-                derivacion = input("")
+                derivacion = input("")'''
         L = TopDownParsing(gramatica)
         L.nT()
         L.calculateFirst()
@@ -56,7 +58,8 @@ if __name__ == '__main__':
             print("la gramatica no es LL1")
 
     elif opcion == 2:
-        gramatica = {}
+        gramatica = GramaticaCodigo
+        '''
         numNoTerminales = int(input("Cuantos no-terminales hay? "))
         for i in range(numNoTerminales):
             noTerminal = input("no-terminal "+str(i+1)+": ")
@@ -66,7 +69,7 @@ if __name__ == '__main__':
             derivacion = input("")
             while(derivacion != "$"):
                 gramatica[noTerminal].append(derivacion)
-                derivacion = input("")
+                derivacion = input("")'''
         
         B = BottonUpParsing(gramatica)
         B.funcionTerminales()
