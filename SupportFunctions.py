@@ -1,5 +1,6 @@
 #gramatica  = {"S": ["aaSb", "cSb", "b"]}
 #Diccionario = {"S":["L=R","R"],"L":["*R","i"],"R":["L"]}
+gramatica = {"E": ["TA"], "A": ["+TA", "ε"],"T": ["FB"], "B": ["*FB", "ε"], "F": ["(E)", "i"]}
 
 def dot(cadena):
     pos = cadena.find('·')
@@ -49,3 +50,12 @@ def listaToString(lista):
     cadena = ''.join(str(elem) for elem in lista)
     return cadena
 
+def reglasEpsilon(gramatica):
+    reglas = {}
+    num = 0
+    for key, value in gramatica.items():
+        if "ε" in value:
+            indice = (value.index("ε")) + 1
+            reglas[key] = ["ε", num + indice]
+        num = num + len(value)
+    return reglas

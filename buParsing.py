@@ -233,11 +233,18 @@ class BottonUpParsing:
                 gramaticaSinPrima = self.gramatica
                 del gramaticaSinPrima[self.prima]
                 reglas  = sf.reglasDeDerivacion(gramaticaSinPrima)
+                reglasEpsilon = sf.reglasEpsilon(gramaticaSinPrima)
                 
                 
-                for i in range(0, len(reglas)):
-                    if reglas[i] == cadena:
-                        posRegla = i + 1
+                
+                if cadena == "ε":
+                    for llave, valor in reglasEpsilon.items():
+                        if llave == key:
+                            posRegla = valor[1]
+                else:
+                    for i in range(0, len(reglas)):
+                        if reglas[i] == cadena:
+                            posRegla = i + 1
                 
                 
                 
@@ -326,7 +333,7 @@ class BottonUpParsing:
                 accion = self.action(estado, elemento)
                 if accion == True:
                     lista_copia[indice] = 'Error'
-                    mensaje  = 'Esta gramatica no es LR1, la tabla presenta conflictos'
+                    mensaje  = 'Error, la tabla presenta conflictos'
                 else:
                     lista_copia[indice] = accion
                 
@@ -350,7 +357,7 @@ class BottonUpParsing:
         if self.prima in gramaticaSinPrima:
             del gramaticaSinPrima[self.prima]
         reglas  = sf.reglasDeDerivacion(gramaticaSinPrima)
-        
+        reglasEpsilon = sf.reglasEpsilon(gramaticaSinPrima)
         
         
         action  = ''
@@ -411,30 +418,43 @@ class BottonUpParsing:
                 numeroregla = int(accion[1:])
                 derivacion  = reglas[numeroregla-1]
                 
-                for llave, valor in self.gramatica.items():
-                    for element in valor:
-                        if derivacion == element:
+                
+                if derivacion == "ε":
+                    for llave, valor in reglasEpsilon.items():
+                        if numeroregla in valor:
                             key = llave
                 
+                else:
+                    for llave, valor in self.gramatica.items():
+                        for element in valor:
+                            if derivacion == element:
+                                key = llave
                 
-                symbols = symbols[:-len(derivacion)]
+                if derivacion == "ε":
+                    pass
+                else:
+                    symbols = symbols[:-len(derivacion)]
+                
                 
                 symbols.append(key)
                 
                 action = 'Reduce by ' + key + ' --> ' + derivacion
                 
-                simbolosEliminar = len(derivacion)
                 
-                stack  = stack[:-simbolosEliminar]
+                if derivacion == "ε":
+                    pass
+                else: 
+                    simbolosEliminar = len(derivacion)
+                    stack  = stack[:-simbolosEliminar]
                 
                 
                 accionreduce = self.action(stack[-1], symbols[-1])
-                            
+                
+                
                 if accionreduce.find('r') == -1:
                     stack.append(int(accionreduce))
                 else:
                     stack.append(int(accionreduce[1:]))
-                
                 
                 st = stack.copy()
                 sy = symbols.copy()
@@ -547,6 +567,8 @@ follow = {'a' : ['NA'], 'b' : ['NA'], 'c' : ['NA'], 'S': ['$', 'b']}
 
 gramatica = {"S": ["ABC", "d"], "A": ["aA", "ε"], "B": ["bB" , "ε"], "C": ["cC" , "ε"], "D" : ["dD" , "ε"], "E": ["eE" , "ε"], "F": ["ε"]}
 
+
+gramatica = {"S": ["hBe"], "B": ["BA", "ε"], "A": ["x", "t"]}
 '''
 #gramatica = {"S": ["ABC", "d"], "A": ["aA", "ε"], "B": ["bB" , "ε"], "C": ["cC" , "ε"], "D" : ["dD" , "ε"], "E": ["eE" , "ε"], "F": ["ε"]}
 #gramatica = {"S": ["aTb", "aR", "cT"], "T": ["d"], "R": ["d"]}
@@ -571,15 +593,17 @@ gramatica = {"S": ["ABC", "d"], "A": ["aA", "ε"], "B": ["bB" , "ε"], "C": ["cC
 
 #gramatica = {"A": ["BCD","Aa"], "B": ["b", "ε"],"C": ["c", "ε"], "D": ["d", "Ce"]}
 
-gramatica = {"E" : ["E+T", "T"], "T" : ["T*F", "F"], "F" : ["(E)", "i"]}
+#gramatica = {"E" : ["E+T", "T"], "T" : ["T*F", "F"], "F" : ["(E)", "i"]}
+gramatica= {"E": ["TA"], "A": ["+TA", "ε"],"T": ["FB"], "B": ["*FB", "ε"], "F": ["(E)", "i"]}
+#gramatica = {"S": ["hBe"], "B": ["BA", "ε"], "A": ["x", "t"]}
 
 #ca= td.TopDownParsing({"S":["L=R","R"],"R":["L"],"L":["*R","i"]})
 
 
 
-#bu  = BottonUpParsing(gramatica)
-#bu.funcionTerminales()
-#bu.noterminalprima()
+bu  = BottonUpParsing(gramatica)
+bu.funcionTerminales()
+bu.noterminalprima()
 
 #print(bu.gramatica)
 
@@ -588,15 +612,14 @@ gramatica = {"E" : ["E+T", "T"], "T" : ["T*F", "F"], "F" : ["(E)", "i"]}
 
 #print(bu.GoTo(estado0, 'T'))
 
-#d1, d2, d3 = bu.LR0()
+d1, d2, d3 = bu.LR0()
 #print(f'd1: {d1}, d2: {d2}, d3: {d3}')
 
-#accion =  bu.action(5, "a")
-
+accion =  bu.action(11, "$")
 #print (f'accion: {accion}')
 
 #bu.impresionLR0()
 
 #print(bu.SLR())
 
-#print(bu.parsing('j'))
+#print(bu.parsing("i+i"))

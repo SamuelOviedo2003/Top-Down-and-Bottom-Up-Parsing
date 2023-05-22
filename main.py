@@ -7,6 +7,7 @@ if __name__ == '__main__':
     print("| 2) Bottom-Up Parsing |")
     opcion = int(input(""))
     GramaticaCodigo = {"E": ["TA"], "A": ["+TA", "ε"],"T": ["FB"], "B": ["*FB", "ε"], "F": ["(E)", "i"]}
+    #GramaticaCodigo = {"S":["L=R","R"],"L":["*R","i"],"R":["L", "i"]}
 
     if opcion == 1:
         gramatica = GramaticaCodigo
@@ -39,6 +40,19 @@ if __name__ == '__main__':
             L.calculateTabla()
             print(L.tabla)
             print("")
+            
+            '''
+            print("Ingresa las cadenas a analizar: ")
+            print("")
+            listaCadenasComprobacion = []
+            cadena = " "
+            while cadena != "":
+                cadena = str(input())
+                if cadena == "":
+                    break
+                listaCadenasComprobacion.append(cadena)
+            '''
+            
             ################################
             listaCadenasComprobacion =["i+i","j","(i*i)"]
             listaCadenasFirst =["i+i","j","(i*i)"]
@@ -71,25 +85,41 @@ if __name__ == '__main__':
                 gramatica[noTerminal].append(derivacion)
                 derivacion = input("")'''
         
+        
         B = BottonUpParsing(gramatica)
         B.funcionTerminales()
         B.noterminalprima()
         B.impresionLR0()
         print(" ")
         print(" --------- ")
-        print(B.SLR())
+        tablaSLR = B.SLR()
+        print(tablaSLR)
         print(" ")
         print(" --------- ")
-        ################################
-        listaCadenasComprobacion =["i+i","j","(i*i)"]
-        ################################
-        print("Validacion de cadenas por lista directa en el codigo: ")
-        for cadena in listaCadenasComprobacion:
-            respuesta = B.parsing(cadena)
+        
+        if tablaSLR != 'Error, la tabla presenta conflictos' :
+            
+            print("Ingresa las cadenas a analizar: ")
+            listaCadenasComprobacion = []
+            cadena = " "
+            while cadena != "":
+                cadena = str(input())
+                if cadena == "":
+                    break
+                listaCadenasComprobacion.append(cadena)
+            
+            ################################
+            #listaCadenasComprobacion =["i+i","j","(i*i)"]
+            ################################
+            
+            #print("Validacion de cadenas por lista directa en el codigo: ")
+            
+            for cadena in listaCadenasComprobacion:
+                respuesta = B.parsing(cadena)
+                print("")
+                print(f"{cadena} : {respuesta}")
+                print("")
             print("")
-            print(f"{cadena} : {respuesta}")
-            print("")
-        print("")
         
     else:
         print("Seleccione una opcion valida")
