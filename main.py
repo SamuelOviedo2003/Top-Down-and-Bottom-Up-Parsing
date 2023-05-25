@@ -6,7 +6,17 @@ if __name__ == '__main__':
     print("| 1) Top-Down Parsing  |")
     print("| 2) Bottom-Up Parsing |")
     opcion = int(input(""))
-    GramaticaCodigo = {"E": ["TA"], "A": ["+TA", "ε"],"T": ["FB"], "B": ["*FB", "ε"], "F": ["(E)", "i"]}
+    GramaticaCodigo = {"S": ["ε"]}
+    #GramaticaCodigo = {"S": ["aSb", "(SS)","c"]}
+    GramaticaCodigo = {"A": ["Bc", "dnABf"], "B": ["r", "ε"]}
+    #GramaticaCodigo = {"S": ["A","0B"],"A":["B","1"],"B":["S"]}
+    #GramaticaCodigo = {"S": ["A","0B"],"A":["B","1"],"B":["S"]}
+    #GramaticaCodigo = {"S": ["0T","1T","2T"],"T":["+ST","*ST","ε"]}
+    #GramaticaCodigo = {"S": ["S+S","S*S","0","1","2"]}
+    #GramaticaCodigo = {"S": ["TF"], "T": ["IG"],"F": ["+S","ε"],"G": ["*T","ε"],"I": ["0","1","2"]}
+    #GramaticaCodigo = {"S": ["T+S","T"], "T": ["I*T","I"],"I": ["0","1","2"]}
+    #GramaticaCodigo = {"S": ["ABdC"], "A": ["0","1"],"B": ["0"],"C":["1","0"]}
+    #GramaticaCodigo = {"S": ["ASAB"], "A": ["bA","ε"],"B": ["aaaaaaa"]}
     #GramaticaCodigo = {"S":["L=R","R"],"L":["*R","i"],"R":["L", "i"]}
 
     if opcion == 1:
@@ -41,7 +51,7 @@ if __name__ == '__main__':
             print(L.tabla)
             print("")
             
-            '''
+            
             print("Ingresa las cadenas a analizar: ")
             print("")
             listaCadenasComprobacion = []
@@ -51,11 +61,15 @@ if __name__ == '__main__':
                 if cadena == "":
                     break
                 listaCadenasComprobacion.append(cadena)
-            '''
+            
             
             ################################
-            listaCadenasComprobacion =["i+i","j","(i*i)"]
-            listaCadenasFirst =["i+i","j","(i*i)"]
+            #listaCadenasComprobacion =["( c c )","a a c b b","a ( c c ) b","( a c b c )","( c a c b )","( c ( c c ) )","a a a c b b b","( ( c c ) c )","( a c b a c b )","a a ( c c ) b b","a ( c a c b ) b","a ( a c b c ) b","( c a a c b b )","( a a c b b c )"]
+            #listaCadenasComprobacion =["1+1", "0+1*0*1*2+2*2+2" ,"2+2+2*2*0+2+2" ,"0*2*1*0+1", "2+0" ,"1*0+2*0+0+1*2*1" ,"1+0+1+1+1*2+1" ,"1+2" ,"2*0+1" ,"0"]
+            #listaCadenasComprobacion =["ɛ"]
+            #listaCadenasComprobacion =["i+i","j","(i*i)"]
+            #listaCadenasComprobacion =["00d1", "00d0", "10d0", "10d1"]
+            listaCadenasFirst =[]
             ################################
             print("Validacion de cadenas por lista directa en el codigo: ")
             for cadena in listaCadenasComprobacion:
@@ -109,7 +123,9 @@ if __name__ == '__main__':
                 listaCadenasComprobacion.append(cadena)
             
             ################################
-            #listaCadenasComprobacion =["i+i","j","(i*i)"]
+            #listaCadenasComprobacion =["0*2+1*0", "1+1+0", "1*1", "0+1", "1*0+2+2+2", "2*2+2" ,"2*2+0*2+1*0*2*0" ,"1" ,"2+2*0*0", "0"]
+            #listaCadenasComprobacion =["0*2+1*0", "1+1+0", "1*1", "0+1", "1*0+2+2+2", "2*2+2" ,"2*2+0*2+1*0*2*0" ,"1" ,"2+2*0*0", "0"]
+            #listaCadenasComprobacion =["00d1", "00d0", "10d0", "10d1"]
             ################################
             
             #print("Validacion de cadenas por lista directa en el codigo: ")
