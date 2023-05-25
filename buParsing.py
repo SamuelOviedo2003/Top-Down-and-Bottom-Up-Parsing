@@ -450,6 +450,9 @@ class BottonUpParsing:
                 
                 accionreduce = self.action(stack[-1], symbols[-1])
                 
+                if accionreduce == '':
+                    return 'No'
+                
                 
                 if accionreduce.find('r') == -1:
                     stack.append(int(accionreduce))
@@ -594,11 +597,14 @@ gramatica = {"S": ["hBe"], "B": ["BA", "ε"], "A": ["x", "t"]}
 #gramatica = {"A": ["BCD","Aa"], "B": ["b", "ε"],"C": ["c", "ε"], "D": ["d", "Ce"]}
 
 #gramatica = {"E" : ["E+T", "T"], "T" : ["T*F", "F"], "F" : ["(E)", "i"]}
-gramatica= {"E": ["TA"], "A": ["+TA", "ε"],"T": ["FB"], "B": ["*FB", "ε"], "F": ["(E)", "i"]}
+#gramatica= {"E": ["TA"], "A": ["+TA", "ε"],"T": ["FB"], "B": ["*FB", "ε"], "F": ["(E)", "i"]}
+#gramatica = {"S": ["ABdC"], "A": ["0","1"],"B": ["0"],"C":["1","0"]}
+
 #gramatica = {"S": ["hBe"], "B": ["BA", "ε"], "A": ["x", "t"]}
 
 #ca= td.TopDownParsing({"S":["L=R","R"],"R":["L"],"L":["*R","i"]})
 
+gramatica = {"A": ["Bc", "dnABf"], "B": ["r", "ɛ"]}
 
 
 bu  = BottonUpParsing(gramatica)
@@ -615,7 +621,7 @@ bu.noterminalprima()
 d1, d2, d3 = bu.LR0()
 #print(f'd1: {d1}, d2: {d2}, d3: {d3}')
 
-accion =  bu.action(11, "$")
+#accion =  bu.action(11, "$")
 #print (f'accion: {accion}')
 
 #bu.impresionLR0()
